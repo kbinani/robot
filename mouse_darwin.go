@@ -18,10 +18,10 @@ import (
 func mmv(pos image.Point) error {
 	p := C.CGPointMake(C.CGFloat(pos.X), C.CGFloat(pos.Y))
 	move := C.CGEventCreateMouseEvent(
-		nil, C.kCGEventMouseMoved,
+		0, C.kCGEventMouseMoved,
 		p,
 		C.kCGMouseButtonLeft)
-	if move == nil {
+	if move == 0 {
 		return errors.New("cannot create mouse event")
 	}
 	defer C.releaseCGEvent(move)
@@ -31,8 +31,8 @@ func mmv(pos image.Point) error {
 }
 
 func mpos() (image.Point, error) {
-	event := C.CGEventCreate(nil)
-	if event == nil {
+	event := C.CGEventCreate(0)
+	if event == 0 {
 		return image.Pt(0, 0), errors.New("cannot create CGEvent")
 	}
 	defer C.releaseCGEvent(event)
@@ -60,7 +60,7 @@ func btn(btn Button, operation Op, pos image.Point) {
 		} else {
 			eventType = C.kCGEventLeftMouseDown
 		}
-		down := C.CGEventCreateMouseEvent(nil, eventType, p, mouseButton)
+		down := C.CGEventCreateMouseEvent(0, eventType, p, mouseButton)
 		defer C.releaseCGEvent(down)
 		C.CGEventPost(C.kCGHIDEventTap, down)
 	}
@@ -71,7 +71,7 @@ func btn(btn Button, operation Op, pos image.Point) {
 		} else {
 			eventType = C.kCGEventLeftMouseUp
 		}
-		up := C.CGEventCreateMouseEvent(nil, eventType, p, mouseButton)
+		up := C.CGEventCreateMouseEvent(0, eventType, p, mouseButton)
 		defer C.releaseCGEvent(up)
 		C.CGEventPost(C.kCGHIDEventTap, up)
 	}

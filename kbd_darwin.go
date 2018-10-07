@@ -14,8 +14,8 @@ import (
 )
 
 func setKeyboardStatus(nativeKeyCode int, down bool) {
-	event := C.CGEventCreateKeyboardEvent(nil, (C.CGKeyCode)(nativeKeyCode), C.bool(down))
-	if event == nil {
+	event := C.CGEventCreateKeyboardEvent(0, (C.CGKeyCode)(nativeKeyCode), C.bool(down))
+	if event == 0 {
 		return
 	}
 	defer C.releaseCGEvent(event)

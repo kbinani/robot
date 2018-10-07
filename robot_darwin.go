@@ -4,5 +4,5 @@ package robot
 import "C"
 
 func cfstr(s string) C.CFStringRef {
-	return C.CFStringCreateWithCString(nil, C.CString(s), C.kCFStringEncodingUTF8)
+	return C.CFStringCreateWithCString(0, C.CString(s), C.kCFStringEncodingUTF8)
 }
