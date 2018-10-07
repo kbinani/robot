@@ -17,3 +17,12 @@ func Kbd(code key.Code, op Op) {
 		setKeyboardStatus(nativeKeyCode, false)
 	}
 }
+
+func IsKbdDown(code key.Code) bool {
+	nativeKeyCode := nativeKeyCode(code)
+	return isKeyboardDown(nativeKeyCode)
+}
+
+func KbdBacklightBrightness() float32 {
+	return backlightBrightness()
+}

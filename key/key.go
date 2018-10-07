@@ -32,7 +32,7 @@ const (
 	Y                 Code = 89
 	Z                 Code = 90
 	Start             Code = 92
-	Win               Code = 91
+	// Win               Code = 91
 	Alt               Code = 18
 	Ctrl              Code = 17
 	RCtrl             Code = 163

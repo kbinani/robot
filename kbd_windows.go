@@ -17,3 +17,11 @@ func nativeKeyCode(code key.Code) int {
 	// key.* is equal to VK_* in Windows.
 	return int(code)
 }
+
+func isKeyboardDown(code int) bool {
+	return win.GetAsyncKeyState(int32(code)) != win.SHORT(0)
+}
+
+func backlightBrightness() float32 {
+	return 0
+}

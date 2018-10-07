@@ -4,7 +4,41 @@ package robot
 #include <Carbon/Carbon.h>
 
 static void releaseCGEvent(CGEventRef o) {
-	CFRelease(o);
+    CFRelease(o);
+}
+
+static float get_keyboard_backlight_brightness() {
+    io_service_t service_object = IOServiceGetMatchingService(kIOMasterPortDefault,
+                                                              IOServiceMatching("AppleLMUController"));
+    kern_return_t kr = KERN_FAILURE;
+    io_connect_t connect;
+    if (service_object) {
+        kr = IOServiceOpen(service_object, mach_task_self(), 0, &connect);
+    }
+    IOObjectRelease(service_object);
+    if (kr != KERN_SUCCESS) {
+        return -1;
+    }
+    uint32_t input_count = 1;
+    uint32_t output_count = 1;
+    uint64_t unknown = 0;
+    uint64_t brightness = 0;
+    int kGetLEDBrightnessID = 1;
+    kr = IOConnectCallMethod(connect,
+                             kGetLEDBrightnessID,
+                             &unknown,
+                             input_count,
+                             nil,
+                             0,
+                             &brightness,
+                             &output_count,
+                             nil,
+                             0);
+    IOServiceClose(connect);
+    if (kr != KERN_SUCCESS) {
+        return -1;
+    }
+    return brightness / 4091.0;
 }
 */
 import "C"
@@ -20,6 +54,16 @@ func setKeyboardStatus(nativeKeyCode int, down bool) {
 	}
 	defer C.releaseCGEvent(event)
 	C.CGEventPost(C.kCGHIDEventTap, event)
+}
+
+func isKeyboardDown(code int) bool {
+	if code > 0xff {
+		flags := C.CGEventSourceFlagsState(C.kCGEventSourceStateHIDSystemState)
+		return (flags & (C.CGEventFlags)(code)) == (C.CGEventFlags)(code)
+	} else {
+		ret := C.CGEventSourceKeyState(C.kCGEventSourceStateHIDSystemState, (C.CGKeyCode)(code))
+		return ret == C.bool(true)
+	}
 }
 
 func nativeKeyCode(code key.Code) int {
@@ -160,6 +204,12 @@ func nativeKeyCode(code key.Code) int {
 		return C.kVK_ANSI_KeypadMinus
 	case key.OemPeriod:
 		return C.kVK_ANSI_KeypadDecimal
+	case key.Command:
+		return C.kCGEventFlagMaskCommand
 	}
 	return -1
+}
+
+func backlightBrightness() float32 {
+	return (float32)(C.get_keyboard_backlight_brightness())
 }
